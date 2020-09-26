@@ -4,6 +4,19 @@ metadata:
   name: jenkins
 ---
 apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jenkins-claim
+  namespace: jenkins
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: gb2
+  resources:
+    requests:
+      storage: 50Gi
+---
+apiVersion: v1
 kind: Service
 metadata:
   name: jenkins
@@ -39,8 +52,7 @@ spec:
     spec:
       containers:
         - name: jenkins
-          image: premkumarbp3/jenkins-master
-          imagePullPolicy: Never
+          image: 392473504482.dkr.ecr.us-east-1.amazonaws.com/jenkins-master:latest
           ports:
             - name: http-port
               containerPort: 8080
@@ -51,7 +63,8 @@ spec:
               mountPath: /var/jenkins_home
       volumes:
         - name: jenkins-home
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: jenkins-claim
 ---
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
@@ -62,7 +75,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-    - host: myjenkins.com
+    - host: jenkins.codegene.in
       http:
         paths:
           - path: /
