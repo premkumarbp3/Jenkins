@@ -75,19 +75,21 @@ spec:
           persistentVolumeClaim:
             claimName: jenkins-claim
 ---
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: jenkins
   namespace: jenkins
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+  labels:
+    app: jenkins
 spec:
   rules:
-    - host: jenkins.codegene.in
-      http:
+    - http:
         paths:
-          - path: /
+          - path: /*
             backend:
               serviceName: jenkins
               servicePort: 80
