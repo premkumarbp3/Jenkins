@@ -1,0 +1,21 @@
+pipeline {
+    agent {
+        label 'python36'
+    }
+    environment {
+        PROXY_URL = "oproxy.fg.rbc.com"
+        PROXY_PORT = "8080"
+        PROXYTYPE = "http"
+        SLACKURL = "https://slack.com/api/chat.postMessage"
+        PROXYCREDS = credentials('proxy-creds')
+    }
+    stages{
+        stage('slack-test') {
+            withCredentials([string(credentialsId: 'slack', variable: 'SLACK-TOKEN')]) {
+                sh """
+                    curl -H "Content-type: application/json" -d "text=${env.BUILD_ID} Failed on ${env.JENKINS_URL}" -d "channel=mychannel" -H "Authorization: Bearer ${SLACK-TOKEN}" -X POST ${env.SLACKURL} --proxy ${env.PROXYTYPE}://${env.PROXYCREDS}@${env.PROXY_URL}:${env.PROXY_PORT}
+                """
+            }
+        }
+    }
+}
