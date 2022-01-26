@@ -3,7 +3,7 @@ pipeline {
         label 'python36'
     }
     environment {
-        PROXY_URL = "oproxy.fg.rbc.com"
+        PROXY_URL = "proxy.two.hsbc.com"
         PROXY_PORT = "8080"
         PROXYTYPE = "http"
         SLACKURL = "https://slack.com/api/chat.postMessage"
